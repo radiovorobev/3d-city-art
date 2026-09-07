@@ -238,7 +238,14 @@ function addTree(x,z,s=1){
 });
 
 const raycaster=new THREE.Raycaster(); const pointer=new THREE.Vector2(); let hovered=null; let selected=null;
-let pointerStart=null; let suppressNextClick=false;
+let pointerStart=null; let pointerTravelled=false; let suppressNextClick=false; let activePointerCount=0;
+function pickBuilding(clientX,clientY){
+  const rect=renderer.domElement.getBoundingClientRect();
+  pointer.x=((clientX-rect.left)/rect.width)*2-1;
+  pointer.y=-((clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(pointer,camera);
+  return raycaster.intersectObjects(interactive,false)[0]?.object||null;
+}
 function paintBuilding(data,color,emissive='#000000'){
   data?.meshes?.forEach(mesh=>{mesh.material.color.set(color);mesh.material.emissive.set(emissive)});
 }
@@ -291,15 +298,31 @@ function closeArtworkViewer(){
   artworkViewer.classList.remove('is-open');
   artworkViewer.setAttribute('aria-hidden','true');
 }
-renderer.domElement.addEventListener('pointermove',e=>{const r=renderer.domElement.getBoundingClientRect();pointer.x=((e.clientX-r.left)/r.width)*2-1;pointer.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);setHovered(raycaster.intersectObjects(interactive,false)[0]?.object||null)});
-renderer.domElement.addEventListener('pointerdown',e=>{if(e.isPrimary)pointerStart={x:e.clientX,y:e.clientY}});
-renderer.domElement.addEventListener('pointerup',e=>{
-  if(!e.isPrimary||!pointerStart)return;
-  suppressNextClick=Math.hypot(e.clientX-pointerStart.x,e.clientY-pointerStart.y)>8;
-  pointerStart=null;
+renderer.domElement.addEventListener('pointermove',e=>{
+  if(e.isPrimary&&pointerStart&&Math.hypot(e.clientX-pointerStart.x,e.clientY-pointerStart.y)>8)pointerTravelled=true;
+  if(e.pointerType!=='touch')setHovered(pickBuilding(e.clientX,e.clientY));
 });
-renderer.domElement.addEventListener('pointercancel',()=>{pointerStart=null;suppressNextClick=true});
-renderer.domElement.addEventListener('click',()=>{if(suppressNextClick){suppressNextClick=false;return}if(hovered)openCard(hovered.userData)});
+renderer.domElement.addEventListener('pointerdown',e=>{
+  activePointerCount+=1;
+  if(e.isPrimary){pointerStart={x:e.clientX,y:e.clientY};pointerTravelled=false}
+  if(activePointerCount>1)pointerTravelled=true;
+});
+renderer.domElement.addEventListener('pointerup',e=>{
+  activePointerCount=Math.max(0,activePointerCount-1);
+  if(!e.isPrimary||!pointerStart)return;
+  suppressNextClick=pointerTravelled||Math.hypot(e.clientX-pointerStart.x,e.clientY-pointerStart.y)>8;
+  pointerStart=null;
+  if(e.pointerType==='touch'&&!suppressNextClick){
+    const picked=pickBuilding(e.clientX,e.clientY);
+    if(picked){setHovered(picked);openCard(picked.userData);suppressNextClick=true}
+  }
+});
+renderer.domElement.addEventListener('pointercancel',()=>{activePointerCount=0;pointerStart=null;suppressNextClick=true});
+renderer.domElement.addEventListener('click',e=>{
+  if(suppressNextClick){suppressNextClick=false;return}
+  const picked=pickBuilding(e.clientX,e.clientY);
+  if(picked){setHovered(picked);openCard(picked.userData)}
+});
 renderer.domElement.addEventListener('pointerleave',()=>setHovered(null));
 document.querySelector('.card-close').addEventListener('click',closeCard);
 document.querySelector('#previous-artwork').addEventListener('click',()=>showAdjacentArtwork(-1));
