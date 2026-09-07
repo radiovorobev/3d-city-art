@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#eee9df" />
+    <title>Улица Мира — дома 8–14</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Улица Мира — на главную">
+          <span class="brand-mark" aria-hidden="true">М</span>
+          <span><strong>Улица Мира</strong><small>архитектурный фрагмент</small></span>
+        </a>
+        <nav class="nav" aria-label="Навигация по проекту">
+          <button class="nav-link is-active" data-view="model">3D-модель</button>
+          <button class="nav-link" data-view="about">О проекте</button>
+        </nav>
+        <button class="sound-toggle" aria-label="Переключить атмосферный звук" title="Звук не используется">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+
+      <main class="stage" aria-label="Интерактивный 3D-макет улицы Мира">
+        <div id="scene"></div>
+        <div id="labels" aria-hidden="true"></div>
+
+        <section class="intro" id="intro">
+          <p class="eyebrow">Петроградская сторона · Санкт-Петербург</p>
+          <h1>Мира,<br><em>8–14</em></h1>
+          <p class="lead">Небольшой фрагмент города,<br>собранный из света, линий и памяти.</p>
+          <div class="hint"><span class="mouse-icon"></span> Миниатюра отмечает работу · выберите дом</div>
+        </section>
+
+        <aside class="compass" aria-label="Ориентация модели">
+          <span>С</span><i></i><small>Австрийская<br>площадь</small>
+        </aside>
+
+        <div class="controls" aria-label="Управление моделью">
+          <button id="zoom-in" aria-label="Приблизить">＋</button>
+          <button id="zoom-out" aria-label="Отдалить">−</button>
+          <button id="reset-view" aria-label="Вернуть исходный ракурс">↗</button>
+        </div>
+
+        <div class="view-switcher" role="group" aria-label="Ракурс">
+          <button class="is-active" data-camera="perspective">Перспектива</button>
+          <button data-camera="top">План</button>
+        </div>
+
+        <div class="movement-mode" role="group" aria-label="Жест одним пальцем">
+          <span>1 палец</span>
+          <button class="is-active" data-nav-mode="orbit" aria-pressed="true">Крутить</button>
+          <button data-nav-mode="pan" aria-pressed="false">Двигать</button>
+        </div>
+
+        <section class="about-panel" id="about-panel" aria-hidden="true">
+          <button class="about-close" aria-label="Закрыть">×</button>
+          <p class="eyebrow">О проекте</p>
+          <h2>Архитектура<br>как воспоминание</h2>
+          <p>Схематичный цифровой макет участка улицы Мира у Австрийской площади. Здесь нет шума обычной карты — только масштаб, силуэты и истории, прикреплённые к каждому дому.</p>
+          <p class="about-note">Выберите здание на макете, чтобы открыть его визуальный архив.</p>
+        </section>
+
+        <aside class="building-card" id="building-card" aria-live="polite" aria-hidden="true">
+          <button class="card-close" aria-label="Закрыть карточку">×</button>
+          <div class="card-artwork">
+            <div class="gallery" id="gallery"></div>
+            <div class="gallery-footer">
+              <span id="gallery-count">Работа 1 из 4</span>
+              <div class="artwork-navigation" aria-label="Переключение работ">
+                <button id="previous-artwork" aria-label="Предыдущая работа">←</button>
+                <button id="next-artwork" aria-label="Следующая работа">→</button>
+              </div>
+            </div>
+          </div>
+          <div class="card-copy">
+            <div class="card-index"><span id="card-index">01</span> / 04</div>
+            <p class="eyebrow">Работа художника</p>
+            <h2 id="card-title">Мира, 8</h2>
+            <p class="card-meta" id="card-meta">Дом на улице Мира</p>
+            <div class="card-context">
+              <span id="card-type">Жилой дом</span>
+              <p class="card-description" id="card-description"></p>
+            </div>
+            <button class="artwork-full" id="artwork-full">Рассмотреть в полном размере ↗</button>
+          </div>
+        </aside>
+
+        <section class="artwork-viewer" id="artwork-viewer" aria-hidden="true" aria-label="Полноэкранный просмотр работы">
+          <header class="viewer-header">
+            <button class="viewer-back" id="viewer-back">← Назад к карточке</button>
+            <div class="viewer-heading">
+              <strong id="viewer-title">Мира, 8</strong>
+              <span id="viewer-count">Работа 1 из 4</span>
+            </div>
+            <div class="viewer-navigation" aria-label="Переключение работ в полном размере">
+              <button id="viewer-previous" aria-label="Предыдущая работа">←</button>
+              <button id="viewer-next" aria-label="Следующая работа">→</button>
+            </div>
+          </header>
+          <figure class="viewer-canvas">
+            <img id="viewer-image" src="" alt="">
+          </figure>
+        </section>
+
+        <div class="status-line">
+          <span>59°58′ с. ш.</span><i></i><span>30°19′ в. д.</span><i></i>
+          <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
